@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Calculator</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <a id="stringCalculation"></a><br>
+    <a id="stringResult"></a>
+    <br>
+    <button id="one" class="number">1</button>
+    <button id="two" class="number">2</button>
+    <button id="three" class="number">3</button><br>
+    <button id="four" class="number">4</button>
+    <button id="five" class="number">5</button>
+    <button id="six" class="number">6</button><br>
+    <button id="seven" class="number">7</button>
+    <button id="eight" class="number">8</button>
+    <button id="nine" class="number">9</button><br>
+    <button id="zero" class="number">0</button><br>
+    <button id="symbolPlus" class="operator">+</button>
+    <button id="symbolMinus" class="operator">-</button>
+    <button id="symbolTimes" class="operator">*</button>
+    <button id="symbolDivid" class="operator">/</button><br>
+    <button id="equals">=</button>
+    <button id="clearButton">Clear</button><br>
+    <button id="backspace">Backsp</button>
+    <button id="decimal">.</button>
+    <script>
+        let strTotal = "";
+        let strResult = "";
+        let previousChar = "";
+        let decimalUsed = false;
+
+        const numberButtons = document.querySelectorAll(".number");
+        numberButtons.forEach((button) => {
+            button.addEventListener('click', (e) => {
+                strTotal += `${button.textContent}`;
+                previousChar = `${button.textContent}`;
+                showTotal(strTotal);
+            })
+        })
+
+        const operatorButtons = document.querySelectorAll(".operator");
+        operatorButtons.forEach((button) => {
+            button.addEventListener('click', (e) => {
+                if (previousChar === "" || previousChar === "+" || previousChar === "-" || previousChar === "*" || previousChar === "/" || previousChar === ".") {
+                    strTotal += "";
+                } else {
+                    decimalUsed = false;
+                    strTotal += `${button.textContent}`;
+                    previousChar = `${button.textContent}`;
+                    showTotal(strTotal)
+                }
+            })
+        })
+
+        const equalsButton = document.querySelector("#equals");
+        equalsButton.addEventListener('click', (e) => {
+            let strTotArr = strTotal.split("");
+            strTotal = "";
+            strResult = "";
+            let strCalcArr = [];
+            let number = "";
+            let divideZero = false;
+            let endedOperator = false;
+            decimalUsed = false;
+
+            if (previousChar === "+" || previousChar === "-" || previousChar === "*" || previousChar === "/" || previousChar === ".") {
+                endedOperator = true;
+            } else {
+                previousChar = "";
+            }
+
+            for (let i = 0; i < strTotArr.length; ++i) {
+                if (strTotArr[i] === "+" || strTotArr[i] === "-" || strTotArr[i] === "*" || strTotArr[i] === "/") {
+                    strCalcArr.push(`${number}`);
+                    number = "";
+                    strCalcArr.push(strTotArr[i]);
+                } else if ((i + 1) === strTotArr.length) {
+                    number += strTotArr[i];
+                    strCalcArr.push(`${number}`);
+                } else {
+                    number += strTotArr[i];
+                }
+            }
+
+            while (strCalcArr.indexOf("*") !== -1 || strCalcArr.indexOf("/") !== -1) {
+                let x = strCalcArr.indexOf("*");
+                let y = strCalcArr.indexOf("/");
+                if (x !== -1 && y !== -1) {
+                    if (x < y) {
+                        strCalcArr[x - 1] = Math.round(+strCalcArr[x - 1] * +strCalcArr[x + 1] * 100) / 100;
+                        strCalcArr.splice(x, 2);
+                    } else if (y < x) {
+                        if (+strCalcArr[y + 1] === 0) {
+                            divideZero = true;
+                            strCalcArr.splice(y, 2);
+                        } else {
+                            strCalcArr[y - 1] = Math.round(+strCalcArr[y - 1] / +strCalcArr[y + 1] * 100) / 100;
+                            strCalcArr.splice(y, 2);
+                        }
+                    }
+                } else if (x !== -1 && y === -1) {
+                    strCalcArr[x - 1] = Math.round(+strCalcArr[x - 1] * +strCalcArr[x + 1] * 100) / 100;
+                    strCalcArr.splice(x, 2);
+                } else if (x === -1 && y !== -1) {
+                    if (+strCalcArr[y + 1] === 0) {
+                        divideZero = true;
+                        strCalcArr.splice(y, 2);
+                    } else {
+                        strCalcArr[y - 1] = Math.round(+strCalcArr[y - 1] / +strCalcArr[y + 1] * 100) / 100;
+                        strCalcArr.splice(y, 2);
+                    }
+                }
+            }
+
+            while (strCalcArr.indexOf("+") !== -1 || strCalcArr.indexOf("-") !== -1) {
+                let x = strCalcArr.indexOf("+");
+                let y = strCalcArr.indexOf("-");
+                if (x !== -1 && y !== -1) {
+                    if (x < y) {
+                        strCalcArr[x - 1] = +strCalcArr[x - 1] + +strCalcArr[x + 1];
+                        strCalcArr.splice(x, 2);
+                    } else if (y < x) {
+                        strCalcArr[y - 1] = +strCalcArr[y - 1] - +strCalcArr[y + 1];
+                        strCalcArr.splice(y, 2);
+                    }
+                } else if (x !== -1 && y === -1) {
+                    strCalcArr[x - 1] = +strCalcArr[x - 1] + +strCalcArr[x + 1];
+                    strCalcArr.splice(x, 2);
+                } else if (x === -1 && y !== -1) {
+                    strCalcArr[y - 1] = +strCalcArr[y - 1] - +strCalcArr[y + 1];
+                    strCalcArr.splice(y, 2);
+                }
+            }
+
+            if (strCalcArr.length === 1 && divideZero === false && endedOperator === false) {
+                strResult = strCalcArr[0];
+                showResult(strResult);
+            } else if (divideZero === true) {
+                strResult = "Error: divided by zero!";
+                showResult(strResult);
+            } else if (endedOperator === true) {
+                strResult = "Error: ended on operator!";
+                showResult(strResult);
+            } else {
+                console.log(strCalcArr[0])
+                console.log(strCalcArr.length)
+            }
+
+        })
+
+        const decimalButton = document.querySelector("#decimal")
+        decimalButton.addEventListener('click', (e) => {
+            if (decimalUsed === true) {
+                strTotal += "";
+                showTotal(strTotal)
+            } else if (decimalUsed === false) {
+                strTotal += ".";
+                decimalUsed = true;
+                previousChar = ".";
+                showTotal(strTotal);
+            }
+        })
+
+        const clearButton = document.querySelector("#clearButton");
+        clearButton.addEventListener('click', (e) => {
+            strTotal = "";
+            showTotal(strTotal);
+            strResult = "";
+            showResult(strResult);
+            previousChar = "";
+        })
+
+        const backspaceButton = document.querySelector("#backspace");
+        backspaceButton.addEventListener('click', (e) => {
+            // Hij moet ook nog decimalUsed aanpassen als ie weer terug gaat naar een eerder cijfer. Nu kun je als je 1 puntje hebt gebruikt verder en dan weer backspace en zo kan je een cijfer maken met meer dan 1 punt ertussen.
+            strTotal = strTotal.slice(0, (strTotal.length - 1))
+            previousChar = strTotal[(strTotal.length - 1)];
+            showTotal(strTotal);            
+        })
+
+        function showTotal(strTotal) {
+            const aElement = document.querySelector("#stringCalculation")
+            aElement.textContent = strTotal;
+        }
+
+        function showResult(strResult) {
+            const aResult = document.querySelector("#stringResult")
+            aResult.textContent = strResult;
+        }
+        
+    </script>
+</body>
