@@ -176,8 +176,28 @@
         const backspaceButton = document.querySelector("#backspace");
         backspaceButton.addEventListener('click', (e) => {
             // Hij moet ook nog decimalUsed aanpassen als ie weer terug gaat naar een eerder cijfer. Nu kun je als je 1 puntje hebt gebruikt verder en dan weer backspace en zo kan je een cijfer maken met meer dan 1 punt ertussen.
-            strTotal = strTotal.slice(0, (strTotal.length - 1))
-            previousChar = strTotal[(strTotal.length - 1)];
+            // Oke ik heb 'm nou heel simpel aangepast zonder precies meer te weten hoe het werkt. Het lijkt nu goed te gaan en het was dus veel simpeler dan dat ik in eerste instantie dacht. Maar er zijn eigenlijk wel heel veel combinaties mogelijk. Dus ja dan zou je echt moeten gaan testen. Maar ik heb ze er wel makkelijk uit gehaald. Zo is de volgende lijn die ik gecomment heb iéts anders aangepast... nou goed... ik vind het moeilijk uit te leggen maar... dat was bijna hetzelfde. Maar toch anders. Haha. Hij haalde er 1 weg sowieso. En checkte dan of de volgende een punt was. Maar als je alleen een punt had met nog geen nummer erachter, dan moet ie 'm ook weghalen EN decimalUsed op false zetten. Dat was iets anders. Dat is de laatste aanpassing.
+            
+            // strTotal = strTotal.slice(0, (strTotal.length - 1))
+
+            if (strTotal[(strTotal.length - 2)] == ".") {
+                strTotal = strTotal.slice(0, (strTotal.length - 2))
+                decimalUsed = false;
+            } else if (strTotal[(strTotal.length - 1)] == "."){
+                strTotal = strTotal.slice(0, (strTotal.length - 1))
+                decimalUsed = false;
+            } else {
+                strTotal = strTotal.slice(0, (strTotal.length - 1))
+            }
+
+            if (strTotal.length == 1 || strTotal.length == 0) {
+                previousChar = "";
+            } else {
+                previousChar = strTotal[(strTotal.length - 1)];
+            }
+            
+            // recursBack();
+
             showTotal(strTotal);            
         })
 
@@ -191,5 +211,14 @@
             aResult.textContent = strResult;
         }
         
+        // function recursBack() {
+        //     strTotal = strTotal.slice(0, (strTotal.length - 1))
+        //     if (strTotal[(strTotal.length - 1)] == ".") {
+        //         strTotal = strTotal.slice(0, (strTotal.length - 1))
+        //     } else {
+        //         previousChar = strTotal[(strTotal.length - 1)];
+        //     }
+        // }
+
     </script>
 </body>
