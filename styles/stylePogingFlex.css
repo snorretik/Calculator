@@ -1,3 +1,7 @@
+body {
+    display: flex;
+    justify-content: center;
+}
 #geheel {
     background-color: white;
 }
@@ -5,7 +9,7 @@
     background-color: #0F5897;
         
     padding: 10px 0px 10px 0px;
-    margin: 100px 250px 0px 450px;
+    margin: 100px 0px 0px 0px;
     
     border-color: black;
     border-width: 2px;
